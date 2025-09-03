@@ -18,6 +18,4 @@ dynamic = ["version"]
 features = ["pyo3/extension-module"]
 
 [tool.uv.workspace]
-members = [
-    "naturalneighbor3d",
-]
+members = ["naturalneighbor3d"]
