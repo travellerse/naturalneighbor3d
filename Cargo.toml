@@ -1,12 +1,59 @@
 [package]
 name = "naturalneighbor3d"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "High-performance 3D natural neighbor interpolation library"
+license = "MIT OR Apache-2.0"
+authors = ["Natural Neighbor 3D Contributors"]
+repository = "https://github.com/travellerse/naturalneighbor3d"
+readme = "README.md"
+keywords = ["interpolation", "3d", "spatial", "natural-neighbor", "scientific"]
+categories = ["science", "algorithms", "mathematics"]
+build = "build.rs"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "naturalneighbor3d"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = "0.26.0"
+pyo3 = { version = "0.22.0", features = ["extension-module"] }
+numpy = "0.22.0"
+ndarray = "0.16.0"
+thiserror = "1.0.50"
+
+[build-dependencies]
+pyo3-build-config = "0.22.0"
+
+[dev-dependencies]
+approx = "0.5.1"
+criterion = "0.5.1"
+
+[[bench]]
+name = "kdtree_bench"
+harness = false
+
+[features]
+default = ["simd"]
+simd = []
+avx2 = ["simd"]
+avx512 = ["avx2"]
+neon = ["simd"]
+fast_math = []
+parallel = []
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+debug = false
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.bench]
+opt-level = 3
+debug = false
+lto = true
+codegen-units = 1
