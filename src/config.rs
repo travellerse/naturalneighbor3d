@@ -169,6 +169,18 @@ impl InterpolationConfig {
         self
     }
 
+    /// Sets the minimum number of neighbors
+    pub fn with_min_neighbors(mut self, min: usize) -> Self {
+        self.min_neighbors = min;
+        self
+    }
+
+    /// Sets the maximum number of neighbors
+    pub fn with_max_neighbors(mut self, max: usize) -> Self {
+        self.max_neighbors = max;
+        self
+    }
+
     /// Sets the interpolation method
     pub fn with_method(mut self, method: InterpolationMethod) -> Self {
         self.method = method;
