@@ -615,18 +615,14 @@ pub mod utils {
             for (j, &coord) in point_row.iter().enumerate() {
                 if !coord.is_finite() {
                     return Err(InterpolationError::NumericalError {
-                        message: format!(
-                            "Non-finite coordinate at point {}, axis {}: {}",
-                            i, j, coord
-                        ),
+                        message: format!("Non-finite coordinate at point {i}, axis {j}: {coord}"),
                     });
                 }
 
                 if coord.abs() > MAX_COORDINATE {
                     return Err(InterpolationError::NumericalError {
                         message: format!(
-                            "Coordinate magnitude too large at point {}, axis {}: {}",
-                            i, j, coord
+                            "Coordinate magnitude too large at point {i}, axis {j}: {coord}"
                         ),
                     });
                 }

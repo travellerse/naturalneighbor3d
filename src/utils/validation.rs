@@ -98,10 +98,7 @@ fn validate_ranges_array(interp_ranges: &ArrayView2<f64>) -> InterpolationResult
         // Check for finite values
         if !start.is_finite() || !stop.is_finite() || !step.is_finite() {
             return Err(InterpolationError::NumericalError {
-                message: format!(
-                    "Range values for axis {} contain NaN or infinite values",
-                    axis
-                ),
+                message: format!("Range values for axis {axis} contain NaN or infinite values"),
             });
         }
 
@@ -209,8 +206,7 @@ pub fn validate_points_in_bounds(
                 if coord < start - tolerance || coord > end + tolerance {
                     return Err(InterpolationError::NumericalError {
                         message: format!(
-                            "Point {} coordinate {} ({}) is far outside grid bounds [{}, {}]",
-                            i, axis, coord, start, end
+                            "Point {i} coordinate {axis} ({coord}) is far outside grid bounds [{start}, {end}]"
                         ),
                     });
                 }

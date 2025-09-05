@@ -189,7 +189,7 @@ fn griddata_3d(
         }
         _ => {
             return Err(InterpolationError::NumericalError {
-                message: format!("Unknown interpolation method '{}' for 3D data", method),
+                message: format!("Unknown interpolation method '{method}' for 3D data"),
             }
             .into());
         }
@@ -245,7 +245,7 @@ fn griddata_3d(
         let reshaped = result_clone
             .into_shape_with_order(output_shape)
             .map_err(|e| InterpolationError::NumericalError {
-                message: format!("Failed to reshape result: {}", e),
+                message: format!("Failed to reshape result: {e}"),
             })?;
 
         // Convert to appropriate PyArray type based on dimensions
@@ -254,7 +254,7 @@ fn griddata_3d(
                 let array_3d = reshaped
                     .into_dimensionality::<ndarray::Ix3>()
                     .map_err(|e| InterpolationError::NumericalError {
-                        message: format!("Failed to convert to 3D array: {}", e),
+                        message: format!("Failed to convert to 3D array: {e}"),
                     })?;
                 let py_array = PyArray3::from_array_bound(py, &array_3d);
                 Ok(py_array.to_object(py))
