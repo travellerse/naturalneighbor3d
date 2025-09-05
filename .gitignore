@@ -75,3 +75,6 @@ docs/_build/
 # Lock files
 Cargo.lock
 uv.lock
+
+# mypy
+.mypy_cache/
