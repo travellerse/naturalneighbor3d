@@ -254,7 +254,7 @@ mod geometry_tests {
 #[cfg(test)]
 mod refactored_integration_tests {
     use super::*;
-    use naturalneighbor3d::{config, errors, utils::validation};
+    use naturalneighbor3d::config;
     use ndarray::{Array1, Array2};
 
     #[test]
@@ -269,7 +269,7 @@ mod refactored_integration_tests {
         )
         .expect("Failed to create points array");
 
-        let values = Array1::from_vec(vec![1.0, 2.0, 3.0, 4.0]);
+        let _values = Array1::from_vec(vec![1.0, 2.0, 3.0, 4.0]);
 
         let ranges = Array2::from_shape_vec(
             (3, 3),
@@ -281,15 +281,7 @@ mod refactored_integration_tests {
         )
         .expect("Failed to create ranges array");
 
-        // 2. 测试输入验证
-        let validation_result =
-            validation::validate_inputs(&points.view(), &values.view(), &ranges.view());
-        assert!(
-            validation_result.is_ok(),
-            "Validation should pass for valid inputs"
-        );
-
-        // 3. 测试网格参数计算
+        // 2. 测试网格参数计算
         let grid_params = grid::compute_grid_params(&ranges.view());
         assert_eq!(grid_params.output_shape, vec![3, 3, 3]);
         assert_eq!(grid_params.starts, vec![0.0, 0.0, 0.0]);
@@ -327,38 +319,6 @@ mod refactored_integration_tests {
         // 测试无效配置
         let invalid_config = config::InterpolationConfig::new().with_neighbor_limits(100, 50); // min > max
         assert!(!invalid_config.validate());
-    }
-
-    #[test]
-    fn test_error_handling() {
-        use errors::InterpolationError;
-
-        // 测试数组长度不匹配
-        let points = Array2::from_shape_vec((2, 3), vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0]).unwrap();
-        let values = Array1::from_vec(vec![1.0]); // 错误的长度
-        let ranges =
-            Array2::from_shape_vec((3, 3), vec![0.0, 1.0, 0.1, 0.0, 1.0, 0.1, 0.0, 1.0, 0.1])
-                .unwrap();
-
-        let result = validation::validate_inputs(&points.view(), &values.view(), &ranges.view());
-        assert!(matches!(
-            result,
-            Err(InterpolationError::MismatchedLength {
-                points: 2,
-                values: 1
-            })
-        ));
-
-        // 测试无效的点数组形状
-        let invalid_points = Array2::from_shape_vec((2, 2), vec![0.0, 0.0, 1.0, 1.0]).unwrap();
-        let values = Array1::from_vec(vec![1.0, 2.0]);
-
-        let result =
-            validation::validate_inputs(&invalid_points.view(), &values.view(), &ranges.view());
-        assert!(matches!(
-            result,
-            Err(InterpolationError::InvalidPointsShape { .. })
-        ));
     }
 
     #[test]
@@ -444,54 +404,5 @@ mod refactored_integration_tests {
             InterpolationMethod::default(),
             InterpolationMethod::NaturalNeighbor
         );
-    }
-
-    #[test]
-    fn test_comprehensive_error_scenarios() {
-        use errors::InterpolationError;
-
-        // 测试空数据
-        let empty_points = Array2::zeros((0, 3));
-        let empty_values = Array1::zeros(0);
-        let ranges =
-            Array2::from_shape_vec((3, 3), vec![0.0, 1.0, 0.1, 0.0, 1.0, 0.1, 0.0, 1.0, 0.1])
-                .unwrap();
-
-        let result =
-            validation::validate_inputs(&empty_points.view(), &empty_values.view(), &ranges.view());
-        assert!(matches!(result, Err(InterpolationError::EmptyData)));
-
-        // 测试无效范围
-        let points = Array2::from_shape_vec((2, 3), vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0]).unwrap();
-        let values = Array1::from_vec(vec![1.0, 2.0]);
-        let invalid_ranges = Array2::from_shape_vec(
-            (3, 3),
-            vec![1.0, 0.0, 0.1, 0.0, 1.0, 0.1, 0.0, 1.0, 0.1], // start > stop
-        )
-        .unwrap();
-
-        let result =
-            validation::validate_inputs(&points.view(), &values.view(), &invalid_ranges.view());
-        assert!(matches!(
-            result,
-            Err(InterpolationError::InvalidRange { axis: 0, .. })
-        ));
-
-        // 测试无效步长
-        let invalid_step_ranges = Array2::from_shape_vec(
-            (3, 3),
-            vec![0.0, 1.0, -0.1, 0.0, 1.0, 0.1, 0.0, 1.0, 0.1], // 负步长
-        )
-        .unwrap();
-
-        let result = validation::validate_inputs(
-            &points.view(),
-            &values.view(),
-            &invalid_step_ranges.view(),
-        );
-        assert!(matches!(
-            result,
-            Err(InterpolationError::InvalidStep { axis: 0, .. })
-        ));
     }
 }

@@ -13,6 +13,4 @@
 pub mod python;
 
 // Re-export Python interface
-pub use python::{
-    compute_grid_parameters, griddata, validate_input_arrays, PyGridParams, PyInterpolationConfig,
-};
+pub use python::{compute_grid_parameters, griddata, PyGridParams, PyInterpolationConfig};

@@ -6,7 +6,6 @@
 use crate::config::{GridParams, InterpolationConfig, InterpolationMethod};
 use crate::errors::InterpolationError;
 use crate::utils::grid::compute_grid_params;
-use crate::utils::validation::validate_inputs;
 
 use ndarray::{Array1, Array2, ArrayView1, ArrayView2};
 use numpy::{PyArray1, PyArray3, PyReadonlyArray1, PyReadonlyArray2};
@@ -534,51 +533,6 @@ pub fn compute_grid_parameters(interp_ranges: PyReadonlyArray2<f64>) -> PyResult
     Ok(PyGridParams::from(grid_params))
 }
 
-/// Validates input arrays without performing interpolation
-///
-/// This utility function allows Python users to validate their input data
-/// before attempting interpolation, providing early error detection.
-///
-/// # Arguments
-///
-/// * `known_points` - Array of known data points with shape (N, 3)
-/// * `known_values` - Array of values at known points with shape (N,)
-/// * `interp_ranges` - Grid specification array with shape (3, 3)
-///
-/// # Returns
-///
-/// * `True` if inputs are valid, raises exception otherwise
-///
-/// # Example
-///
-/// ```python
-/// import numpy as np
-/// from naturalneighbor3d import validate_input_arrays
-///
-/// points = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
-/// values = np.array([1.0, 2.0])
-/// ranges = np.array([[0.0, 1.0, 0.1], [0.0, 1.0, 0.1], [0.0, 1.0, 0.1]])
-///
-/// try:
-///     validate_input_arrays(points, values, ranges)
-///     print("Inputs are valid!")
-/// except ValueError as e:
-///     print(f"Invalid input: {e}")
-/// ```
-#[pyfunction]
-pub fn validate_input_arrays(
-    known_points: PyReadonlyArray2<f64>,
-    known_values: PyReadonlyArray1<f64>,
-    interp_ranges: PyReadonlyArray2<f64>,
-) -> PyResult<bool> {
-    let known_points = known_points.as_array();
-    let known_values = known_values.as_array();
-    let interp_ranges = interp_ranges.as_array();
-
-    validate_inputs(&known_points, &known_values, &interp_ranges)?;
-    Ok(true)
-}
-
 /// Python module definition
 ///
 /// Exports the main interpolation function and utility classes
@@ -590,7 +544,6 @@ pub fn _python_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     // Add utility functions
     m.add_function(wrap_pyfunction!(compute_grid_parameters, m)?)?;
-    m.add_function(wrap_pyfunction!(validate_input_arrays, m)?)?;
 
     // Add configuration classes
     m.add_class::<PyInterpolationConfig>()?;

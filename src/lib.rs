@@ -19,7 +19,7 @@
 //!
 //! - [`core`]: Core algorithms and data structures (geometry, kdtree, interpolation)
 //! - [`ffi`]: Foreign Function Interface layer for Python integration
-//! - [`utils`]: Utility functions and helper modules (grid operations, validation)
+//! - [`utils`]: Utility functions and helper modules (grid operations)
 //! - [`perf`]: Performance optimization utilities and constants
 //! - [`errors`]: Structured error handling and Python exception conversion
 //! - [`config`]: Configuration structures and constants
@@ -47,7 +47,6 @@
 #![warn(missing_docs)]
 #![warn(clippy::all)]
 #![warn(clippy::perf)]
-#![allow(clippy::too_many_arguments)]
 
 use pyo3::prelude::*;
 
@@ -77,9 +76,7 @@ pub use core::{KdTree, Point3D, QueryResult};
 pub use errors::{InterpolationError, InterpolationResult};
 
 // Re-export Python bindings
-pub use ffi::{
-    compute_grid_parameters, griddata, validate_input_arrays, PyGridParams, PyInterpolationConfig,
-};
+pub use ffi::{compute_grid_parameters, griddata, PyGridParams, PyInterpolationConfig};
 
 /// Library version information
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
