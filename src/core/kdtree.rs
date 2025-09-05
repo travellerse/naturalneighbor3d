@@ -101,17 +101,6 @@ impl KdNode {
             right: None,
         }
     }
-
-    /// Checks if this node is a leaf (has no children)
-    ///
-    /// # Returns
-    ///
-    /// `true` if the node has no children, `false` otherwise
-    #[inline]
-    #[allow(dead_code)]
-    fn is_leaf(&self) -> bool {
-        self.left.is_none() && self.right.is_none()
-    }
 }
 
 /// A high-performance KD-tree for 3D spatial queries

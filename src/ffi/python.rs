@@ -562,8 +562,6 @@ pub fn _python_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[allow(unused_imports)]
-    use ndarray::{Array1, Array2};
 
     #[test]
     fn test_py_interpolation_config() {

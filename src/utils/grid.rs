@@ -261,8 +261,6 @@ pub fn compute_grid_spacing_stats(grid_params: &GridParams) -> GridSpacingStats 
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[allow(unused_imports)]
-    use ndarray::Array1;
 
     #[test]
     fn test_compute_grid_params() {
