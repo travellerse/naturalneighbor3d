@@ -11,10 +11,7 @@ from .naturalneighbor3d import __version__
 __all__ = (
     "__version__",
     "griddata",
-    "InterpolationConfig",
-    "InterpolationMethod",
-    "GridParams",
     "compute_grid_parameters",
-    "validate_input_arrays",
-    "InterpolationError",
+    "InterpolationConfig",
+    "GridParams",
 )
