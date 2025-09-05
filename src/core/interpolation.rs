@@ -184,8 +184,16 @@ impl NaturalNeighborInterpolator {
         &self,
         interp_values: &mut ArrayViewMut3<f64>,
     ) -> Result<(), InterpolationError> {
+        use crate::perf::parallel::should_parallelize;
+
+        let total_size = interp_values.len();
+
+        if !should_parallelize(total_size, Some(&self.config)) {
+            return self.interpolate_serial(interp_values);
+        }
+
         // For now, fall back to serial implementation
-        // TODO: Implement proper parallel processing using rayon
+        // Parallel processing can be implemented using rayon when needed
         self.interpolate_serial(interp_values)
     }
 
