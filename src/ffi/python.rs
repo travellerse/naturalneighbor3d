@@ -195,44 +195,84 @@ fn griddata_3d(
         }
     };
 
-    // TODO: Implement rescaling if rescale=true
+    // Check if rescaling is requested
     if rescale {
-        return Err(InterpolationError::NumericalError {
-            message: "rescale=True not yet implemented".to_string(),
+        return Err(InterpolationError::NotImplemented {
+            feature: "rescale=True".to_string(),
         }
         .into());
     }
 
-    // For now, we'll use a simplified approach that creates a regular grid
-    // In a full implementation, we'd need to:
-    // 1. Create a KD-tree from the known points
-    // 2. For each xi point, find neighbors and interpolate
-    // 3. Handle points outside convex hull with fill_value
-
-    // Create output array with NaN values initially
+    // Create output array with fill_value initially
     let total_points = xi_points.shape()[0];
     let mut result = Array1::from_elem(total_points, fill_value);
 
-    // Simple nearest neighbor fallback for now
-    // TODO: Implement proper interpolation
-    for (i, xi_point) in xi_points.rows().into_iter().enumerate() {
-        let mut min_dist = f64::INFINITY;
-        let mut nearest_value = fill_value;
+    // Implement basic interpolation based on method
+    match method {
+        "nearest" => {
+            // Nearest neighbor interpolation
+            for (i, xi_point) in xi_points.rows().into_iter().enumerate() {
+                let mut min_dist_sq = f64::INFINITY;
+                let mut nearest_value = fill_value;
 
-        for (j, known_point) in points.rows().into_iter().enumerate() {
-            let dist = ((xi_point[0] - known_point[0]).powi(2)
-                + (xi_point[1] - known_point[1]).powi(2)
-                + (xi_point[2] - known_point[2]).powi(2))
-            .sqrt();
+                for (j, known_point) in points.rows().into_iter().enumerate() {
+                    let dist_sq = (xi_point[0] - known_point[0]).powi(2)
+                        + (xi_point[1] - known_point[1]).powi(2)
+                        + (xi_point[2] - known_point[2]).powi(2);
 
-            if dist < min_dist {
-                min_dist = dist;
-                nearest_value = values[j];
+                    if dist_sq < min_dist_sq {
+                        min_dist_sq = dist_sq;
+                        nearest_value = values[j];
+                    }
+                }
+
+                result[i] = nearest_value;
             }
         }
+        "linear" => {
+            // Inverse distance weighted interpolation
+            for (i, xi_point) in xi_points.rows().into_iter().enumerate() {
+                let mut weighted_sum = 0.0;
+                let mut weight_sum = 0.0;
+                let epsilon = 1e-12; // Small value to avoid division by zero
 
-        result[i] = nearest_value;
-    }
+                for (j, known_point) in points.rows().into_iter().enumerate() {
+                    let dist_sq = (xi_point[0] - known_point[0]).powi(2)
+                        + (xi_point[1] - known_point[1]).powi(2)
+                        + (xi_point[2] - known_point[2]).powi(2);
+
+                    if dist_sq < epsilon {
+                        // Point is very close to a known point, use exact value
+                        result[i] = values[j];
+                        weight_sum = f64::INFINITY; // Signal exact match
+                        break;
+                    }
+
+                    let weight = 1.0 / dist_sq; // Inverse distance squared weighting
+                    weighted_sum += weight * values[j];
+                    weight_sum += weight;
+                }
+
+                if weight_sum.is_finite() && weight_sum > 0.0 {
+                    result[i] = weighted_sum / weight_sum;
+                }
+            }
+        }
+        "natural_neighbor" => {
+            // For now, fallback to linear interpolation
+            // TODO: Implement proper natural neighbor interpolation using core module
+            return Err(InterpolationError::NotImplemented {
+                feature: "natural_neighbor interpolation".to_string(),
+            }
+            .into());
+        }
+        _ => {
+            return Err(InterpolationError::InvalidInput {
+                message: format!("Unknown interpolation method '{method}' for 3D data"),
+            }
+            .into());
+        }
+    };
 
     // Reshape result to match output shape
     if output_shape.len() == 1 {
