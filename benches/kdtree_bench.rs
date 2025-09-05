@@ -1,6 +1,7 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 use naturalneighbor3d::core::geometry::Point3D;
 use naturalneighbor3d::core::kdtree::KdTree;
+use std::hint::black_box;
 
 fn bench_kdtree_build(c: &mut Criterion) {
     let mut group = c.benchmark_group("kdtree_build");
