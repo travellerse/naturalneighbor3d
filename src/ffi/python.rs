@@ -107,7 +107,7 @@ fn parse_xi_parameter(_py: Python, xi: Bound<'_, PyAny>) -> PyResult<(Array2<f64
 ///
 /// # Returns
 ///
-/// * `PyResult<PyObject>` - NumPy array containing interpolated values
+/// * `PyResult<Py<PyAny>>` - NumPy array containing interpolated values
 ///
 /// # Example
 ///
@@ -131,7 +131,7 @@ pub fn griddata(
     method: &str,
     fill_value: f64,
     rescale: bool,
-) -> PyResult<PyObject> {
+) -> PyResult<Py<PyAny>> {
     let points_view = points.as_array();
     let values_view = values.as_array();
 
@@ -172,7 +172,7 @@ fn griddata_3d(
     method: &str,
     fill_value: f64,
     rescale: bool,
-) -> PyResult<PyObject> {
+) -> PyResult<Py<PyAny>> {
     // Parse xi parameter
     let (xi_points, output_shape) = parse_xi_parameter(py, xi)?;
 
@@ -277,8 +277,8 @@ fn griddata_3d(
     // Reshape result to match output shape
     if output_shape.len() == 1 {
         // Return 1D array
-        let py_array = PyArray1::from_array_bound(py, &result);
-        Ok(py_array.to_object(py))
+        let py_array = PyArray1::from_array(py, &result);
+        Ok(py_array.into_any().unbind())
     } else {
         // Reshape to original grid shape
         let result_clone = result.clone();
@@ -296,13 +296,13 @@ fn griddata_3d(
                     .map_err(|e| InterpolationError::NumericalError {
                         message: format!("Failed to convert to 3D array: {e}"),
                     })?;
-                let py_array = PyArray3::from_array_bound(py, &array_3d);
-                Ok(py_array.to_object(py))
+                let py_array = PyArray3::from_array(py, &array_3d);
+                Ok(py_array.into_any().unbind())
             }
             _ => {
                 // For other dimensions, return as 1D for now
-                let py_array = PyArray1::from_array_bound(py, &result);
-                Ok(py_array.to_object(py))
+                let py_array = PyArray1::from_array(py, &result);
+                Ok(py_array.into_any().unbind())
             }
         }
     }
