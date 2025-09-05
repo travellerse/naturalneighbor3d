@@ -38,7 +38,7 @@ pub fn parallel_chunk_size(total_size: usize, num_threads: Option<usize>) -> usi
 
     // Ensure minimum chunk size for efficiency
     let min_chunk_size = 100;
-    let calculated_chunk_size = (total_size + threads - 1) / threads;
+    let calculated_chunk_size = total_size.div_ceil(threads);
 
     calculated_chunk_size.max(min_chunk_size)
 }

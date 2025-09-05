@@ -152,7 +152,7 @@ pub fn griddata(
         .into());
     }
 
-    return griddata_3d(
+    griddata_3d(
         py,
         points_view,
         values_view,
@@ -160,7 +160,7 @@ pub fn griddata(
         method,
         fill_value,
         rescale,
-    );
+    )
 }
 
 /// Helper function for 3D griddata interpolation

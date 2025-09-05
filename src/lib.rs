@@ -117,7 +117,7 @@ fn naturalneighbor3d(m: &Bound<'_, PyModule>) -> PyResult<()> {
     let version_parts: Vec<&str> = meta::VERSION.split('.').collect();
     let version_tuple = (
         version_parts
-            .get(0)
+            .first()
             .unwrap_or(&"0")
             .parse::<u32>()
             .unwrap_or(0),
