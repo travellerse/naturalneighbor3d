@@ -88,7 +88,7 @@ pub enum InterpolationError {
     /// General interpolation failure
     #[error("Interpolation failed: {reason}")]
     InterpolationFailed {
-        /// Reason for the interpolation failure
+        /// The reason for interpolation failure
         reason: String,
     },
 
@@ -97,6 +97,20 @@ pub enum InterpolationError {
     MemoryError {
         /// Details about the memory error
         details: String,
+    },
+
+    /// Feature not yet implemented
+    #[error("Feature not implemented: {feature}")]
+    NotImplemented {
+        /// The feature that is not implemented
+        feature: String,
+    },
+
+    /// Invalid input parameter
+    #[error("Invalid input: {message}")]
+    InvalidInput {
+        /// Description of the invalid input
+        message: String,
     },
 }
 
