@@ -119,9 +119,7 @@ impl NaturalNeighborInterpolator {
     ///
     /// # Examples
     ///
-
     /// # This is an internal API - use the public griddata function instead
-    /// ```
     pub fn interpolate(
         &self,
         interp_values: &mut ArrayViewMut3<f64>,
@@ -380,9 +378,7 @@ struct RoiBounds {
 ///
 /// # Examples
 ///
-
 /// # This is an internal API - use the public griddata function instead
-/// ```
 pub struct LinearInterpolator {
     /// Known data points
     points: Array2<f64>,
